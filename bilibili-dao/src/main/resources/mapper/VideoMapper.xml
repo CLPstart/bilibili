@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tiangong.dao.VideoDao">
+
+<!--    Integer addVideos(Video video);-->
+    <insert id="addVideos" parameterType="com.tiangong.domain.Video" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            t_video(
+                userId,
+                url,
+                thumbnail,
+                title,
+                `type`,
+                duration,
+                area,
+                description,
+                createTime
+        ) VALUES(
+                #{userId},
+                #{url},
+                #{thumbnail},
+                #{title},
+                #{type},
+                #{duration},
+                #{area},
+                #{description},
+                #{createTime}
+        )
+    </insert>
+
+<!--    Integer batchAddVideoTags(List<VideoTag> videoTagList);-->
+    <insert id="batchAddVideoTags" parameterType="java.util.List">
+        INSERT INTO
+            t_video_tag(
+            videoId,
+            tagId,
+            createTime
+        ) VALUES
+            <foreach collection="videoTagList" item="videoTag" separator=",">
+                (
+                    #{videoTag.videoId},
+                    #{videoTag.tagId},
+                    #{videoTag.createTime}
+                )
+            </foreach>
+    </insert>
+
+<!--    Integer pageCountVideos(Map<String, Object> params);-->
+    <select id="pageCountVideos" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            t_video
+        WHERE
+            1 = 1
+        <if test="area != null and area != '' ">
+            AND
+                area = #{area}
+        </if>
+    </select>
+
+<!--    List<Video> pageListVideos(Map<String, Object> params);-->
+    <select id="pageListVideos" parameterType="java.util.Map" resultType="com.tiangong.domain.Video">
+        SELECT
+            *
+        FROM
+            t_video
+        WHERE
+            1 = 1
+        <if test="area != null and area != '' ">
+            AND
+                area = #{area}
+        </if>
+        ORDER BY
+            id
+        DESC
+        LIMIT #{start}, #{limit}
+    </select>
+
+<!--    Video getVideoById(Long videoId);-->
+    <select id="getVideoById" parameterType="java.lang.Long" resultType="com.tiangong.domain.Video">
+        SELECT
+            *
+        FROM
+            t_video
+        WHERE
+            id = #{videoId}
+    </select>
+
+<!--    VideoLike getVideoLikeByVideoIdAndUserId(Long userId, Long videoId);-->
+    <select id="getVideoLikeByVideoIdAndUserId" resultType="com.tiangong.domain.VideoLike">
+        SELECT
+            *
+        FROM
+            t_video_like
+        WHERE
+            videoId = #{videoId}
+        AND
+            userId = #{userId}
+    </select>
+
+<!--    Integer addVideoLike(VideoLike videoLike);-->
+    <insert id="addVideoLike" parameterType="com.tiangong.domain.VideoLike">
+        INSERT INTO
+            t_video_like(
+                userId,
+                videoId,
+                createTime
+        ) VALUES(
+                #{userId},
+                #{videoId},
+                #{createTime}
+        )
+    </insert>
+
+<!--    Integer deleteVideoLike(@Param("videoId") Long videoId,@Param("userId") Long userId);-->
+    <delete id="deleteVideoLike">
+        DELETE FROM
+            t_video_like
+        WHERE
+            videoId = #{videoId}
+        AND
+            userId = #{userId}
+    </delete>
+
+<!--    Long getVideoLikes(Long videoId);-->
+    <select id="getVideoLikes" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT
+            COUNT(1)
+        FROM
+            t_video_like
+        WHERE
+            videoId = #{videoId}
+    </select>
+
+<!--    void deleteVideoCollection(Long videoId, Long userId);-->
+    <delete id="deleteVideoCollection">
+        DELETE FROM
+            t_video_collection
+        WHERE
+            videoId = #{videoId}
+        AND
+            userId = #{userId}
+    </delete>
+
+<!--    void addVideoCollection(VideoCollection videoCollection);-->
+    <insert id="addVideoCollection" parameterType="com.tiangong.domain.VideoCollection">
+        INSERT INTO
+            t_video_collection(
+                videoId,
+                userId,
+                groupId,
+                createTime
+        ) VALUES(
+                #{videoId},
+                #{userId},
+                #{groupId},
+                #{createTime}
+        )
+    </insert>
+
+<!--    Long getVideoCollections(Long videoId);-->
+    <select id="getVideoCollections" parameterType="java.lang.Long" resultType="java.lang.Long">
+        SELECT
+            COUNT(1)
+        FROM
+            t_video_collection
+        WHERE
+            videoId = #{videoId}
+    </select>
+
+<!--    VideoCollection getVideoCollectionByVideoIdAndUserId(@Param("videoId") Long videoId,@Param("userId") Long userId);-->
+    <select id="getVideoCollectionByVideoIdAndUserId" resultType="com.tiangong.domain.VideoCollection">
+        SELECT
+            *
+        FROM
+            t_video_collection
+        WHERE
+            videoId = #{videoId}
+        AND
+            userId = #{userId}
+    </select>
+
+<!--    VideoCoin getVideoCoinByVideoIdAndUserId(@Param("videoId") Long videoId,@Param("userId") Long userId);-->
+    <select id="getVideoCoinByVideoIdAndUserId" resultType="com.tiangong.domain.VideoCoin">
+        SELECT
+            *
+        FROM
+            t_video_coin
+        WHERE
+            videoId = #{videoId}
+        AND
+            userId = #{userId}
+    </select>
+
+<!--    Integer addVideoCoin(VideoCoin videoCoin);-->
+    <insert id="addVideoCoin" parameterType="com.tiangong.domain.VideoCoin">
+        INSERT INTO
+            t_video_coin(
+                userId,
+                videoId,
+                amount,
+                createTime
+            ) VALUES (
+                #{userId},
+                #{videoId},
+                #{amount},
+                #{createTime}
+            )
+    </insert>
+
+<!--    Integer updateVideoCoin(VideoCoin videoCoin);-->
+    <update id="updateVideoCoin" parameterType="com.tiangong.domain.VideoCoin">
+        UPDATE
+            t_video_coin
+        SET
+            amount = #{amount},
+            updateTime = #{updateTime}
+        WHERE
+            userId = #{userId}
+        AND
+            videoId = #{videoId}
+    </update>
+
+<!--    Long getVideoCoins(@Param("videoId") Long videoId, @Param("userId") Long userId);-->
+    <select id="getVideoCoins" resultType="java.lang.Long">
+        SELECT
+            SUM(amount)
+        FROM
+            t_video_coin
+        WHERE
+            videoId = #{videoId}
+        AND
+            userId = #{userId}
+    </select>
+
+<!--    void addVideoComment(VideoComment videoComment);-->
+    <insert id="addVideoComment" parameterType="com.tiangong.domain.VideoComment">
+        INSERT INTO
+            t_video_comment(
+                videoId,
+                userId,
+                `comment`,
+                replyUserId,
+                rootId,
+                createTime
+        ) VALUES (
+                #{videoId},
+                #{userId},
+                #{comment},
+                #{replyUserId},
+                #{rootId},
+                #{createTime}
+        )
+    </insert>
+
+<!--    Integer pageCountVideoComments(Map<String, Object> params);-->
+    <select id="pageCountVideoComments" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            t_video_comment
+        WHERE
+            videoId = #{videoId}
+        AND
+            rootId IS NULL
+    </select>
+
+<!--    List<VideoComment> pageListVideoComments(Map<String, Object> params);-->
+    <select id="pageListVideoComments" parameterType="java.util.Map" resultType="com.tiangong.domain.VideoComment">
+        SELECT
+            *
+        FROM
+            t_video_comment
+        WHERE
+            videoId = #{videoId}
+        AND
+            rootId IS NULL
+        ORDER BY
+            id DESC
+        LIMIT #{start}, #{limit}
+    </select>
+
+<!--    List<VideoComment> batchGetVideoCommentsByRootId(List<Long> parentIdList);-->
+    <select id="batchGetVideoCommentsByRootId" parameterType="java.util.List" resultType="com.tiangong.domain.VideoComment">
+        SELECT
+            *
+        FROM
+            t_video_comment
+        WHERE
+            rootId
+        IN
+            <foreach collection="parentIdList" item="parentId" open="(" close=")" separator=",">
+                #{parentId}
+            </foreach>
+        ORDER BY
+            id
+        DESC
+    </select>
+
+<!--    Video getVideoDetails(Long videoId);-->
+    <select id="getVideoDetails" parameterType="java.lang.Long" resultType="com.tiangong.domain.Video">
+        SELECT
+            *
+        FROM
+            t_video
+        WHERE
+            id = #{videoId}
+    </select>
+
+<!--    VideoView getVideoView(Map<String, Object> params);-->
+    <select id="getVideoView" parameterType="java.util.Map" resultType="com.tiangong.domain.VideoView">
+        SELECT
+            *
+        FROM
+            t_video_view
+        WHERE
+            videoId = #{videoId};
+            <if test="userId == null and clientId != null">
+                AND
+                    clientId = #{clientId}
+                AND
+                    userId IS NULL
+            </if>
+            <if test="userId != null">
+                AND
+                    userId = #{userId}
+            </if>
+            <if test="ip != null and ip != '' ">
+                AND
+                    ip = #{ip}
+            </if>
+            <if test="today != null and today != ''">
+                AND
+                    DATE_FORMAT(createTime, '%Y-%m-%d') = #{today}
+            </if>
+    </select>
+
+<!--    Integer addVideoView(VideoView videoView);-->
+    <insert id="addVideoView" parameterType="com.tiangong.domain.VideoView">
+        INSERT INTO
+            t_video_view(
+                videoId,
+                userId,
+                clientId,
+                ip,
+                createTime
+        ) VALUES (
+                #{videoId},
+                #{userId},
+                #{clientId},
+                #{ip},
+                #{createTime}
+        )
+    </insert>
+
+<!--    Integer getVideoViewCounts(Long videoId);-->
+    <select id="getVideoViewCounts" parameterType="java.lang.Long" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            t_video_view
+        WHERE
+            videoId = #{videoId}
+    </select>
+
+<!--    List<UserPreference> getUserPreference(Long userId);-->
+    <select id="getUserPreference" parameterType="java.lang.Long" resultType="com.tiangong.domain.UserPreference">
+        SELECT
+            userId,
+            videoId,
+            SUM(
+                CASE operationType
+                    WHEN '0' THEN 6
+                    WHEN '1' THEN 2
+                    WHEN '2' THEN 2
+                    ELSE 0 END
+                ) AS `value`
+        FROM
+            t_video_operation
+        GROUP BY
+            userId,
+            videoId
+    </select>
+
+<!--    List<Video> batchGetVideosByIds(@Param("idList") List<Long> itemIds);-->
+    <select id="batchGetVideosByIds" resultType="com.tiangong.domain.Video">
+        SELECT
+            *
+        FROM
+            t_video
+        WHERE
+            id
+        IN 
+            <foreach collection="idList" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+    </select>
+
+<!--    void batchAddVideoBinaryPictures(List<VideoBinaryPicture> pictures);-->
+    <insert id="batchAddVideoBinaryPictures" parameterType="java.util.List">
+        INSERT INTO
+            t_video_binary_picture(
+                videoId,
+                frameNo,
+                url,
+                videoTimestamp,
+                createTime
+        ) VALUES
+                <foreach collection="pictureList" item="picture" separator=",">
+                    (
+                        #{picture.videoId},
+                        #{picture.frameNo},
+                        #{picture.url},
+                        #{picture.videoTimestamp},
+                        #{picture.createTime}
+                    )
+                </foreach>
+    </insert>
+
+</mapper>

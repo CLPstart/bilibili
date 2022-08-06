@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tiangong.dao.AuthRoleDao">
+
+<!--    AuthRole getRoleByCode(String code);-->
+    <select id="getRoleByCode" parameterType="java.lang.String" resultType="com.tiangong.domain.auth.AuthRole">
+        SELECT
+            *
+        FROM
+            t_auth_role
+        WHERE
+            code = #{code}
+    </select>
+
+</mapper>

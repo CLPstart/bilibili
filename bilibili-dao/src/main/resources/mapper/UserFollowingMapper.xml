@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tiangong.dao.UserFollowingDao">
+
+<!--    Integer deleteUserFollowing(Long userId, Long followingId);-->
+    <delete id="deleteUserFollowing">
+        DELETE FROM
+                   t_user_following
+        WHERE
+            userId = #{userId}
+        AND
+            followingId = #{followingId}
+    </delete>
+
+<!--    void addUserFollowing(UserFollowing userFollowing);-->
+    <insert id="addUserFollowing" parameterType="com.tiangong.domain.UserFollowing">
+        INSERT INTO
+            t_user_following(
+                     userId,
+                     followingId,
+                     groupId,
+                     createTime
+            )VALUES(
+               #{userId},
+               #{followingId},
+               #{groupId},
+               #{createTime}
+            )
+    </insert>
+
+<!--    List<UserFollowing> getUserFollowings(Long userId);-->
+    <select id="getUserFollowings" parameterType="java.lang.Long" resultType="com.tiangong.domain.UserFollowing">
+        SELECT
+            *
+        FROM
+            t_user_following
+        WHERE
+            userId = #{userId}
+    </select>
+
+<!--    List<UserFollowing> getUserFans(Long userId);-->
+    <select id="getUserFans" parameterType="java.lang.Long" resultType="com.tiangong.domain.UserFollowing">
+        SELECT
+            *
+        FROM
+            t_user_following
+        WHERE
+            followingId = #{userId}
+    </select>
+    
+</mapper>

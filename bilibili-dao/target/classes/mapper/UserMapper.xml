@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tiangong.dao.UserDao">
+
+<!--    User getUserByPhone(String phone);-->
+    <select id="getUserByPhone" parameterType="java.lang.String" resultType="com.tiangong.domain.User">
+        SELECT
+            *
+        FROM
+            t_user
+        WHERE
+            phone = #{phone}
+    </select>
+
+<!--    Integer addUser(User user);-->
+    <insert id="addUser" parameterType="com.tiangong.domain.User" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            t_user(
+               phone,
+               email,
+               password,
+               salt,
+               createTime
+             )VALUES (
+              #{phone},
+              #{email},
+              #{password},
+              #{salt},
+              #{createTime}
+             )
+    </insert>
+
+<!--    Integer addUserInfo(UserInfo userInfo);-->
+    <insert id="addUserInfo" parameterType="com.tiangong.domain.UserInfo">
+        INSERT INTO
+            t_user_info(
+                userId,
+                nick,
+                birth,
+                gender,
+                createTime,
+                avatar,
+                sign
+            )VALUES (
+                 #{userId},
+                 #{nick},
+                 #{birth},
+                 #{gender},
+                 #{createTime},
+                 #{avatar},
+                 #{sign}
+            )
+    </insert>
+
+<!--    User getUserById(Long userId);-->
+    <select id="getUserById" parameterType="java.lang.Long" resultType="com.tiangong.domain.User">
+        SELECT
+            *
+        FROM
+            t_user
+        WHERE
+            id = #{id}
+    </select>
+
+<!--    UserInfo getUserInfoById(Long userId);-->
+    <select id="getUserInfoById" parameterType="java.lang.Long" resultType="com.tiangong.domain.UserInfo">
+        SELECT
+            *
+        FROM
+            t_user_info
+        WHERE
+            userId = #{userId}
+    </select>
+
+<!--    User getUserByPhoneOrEmail(@Param("phone") String phone, @Param("email") String email);-->
+    <select id="getUserByPhoneOrEmail" parameterType="java.lang.String" resultType="com.tiangong.domain.User">
+        SELECT
+            *
+        FROM
+            t_user
+        WHERE
+            phone = #{phone}
+           OR
+            email = #{email}
+    </select>
+
+<!--    Integer updateUsers(User user);-->
+    <update id="updateUsers" parameterType="com.tiangong.domain.User">
+        UPDATE
+            t_user
+        SET
+            <if test="phone != null and phone != '' ">
+                phone = #{phone},
+            </if>
+            <if test="email != null and email != '' ">
+                email = #{email},
+            </if>
+            <if test="password != null and password != '' ">
+                password = #{password},
+            </if>
+        updateTime = #{updateTime}
+        WHERE
+            id = #{id}
+    </update>
+
+<!--    void updateUserInfos(UserInfo userInfo);-->
+    <update id="updateUserInfos" parameterType="com.tiangong.domain.UserInfo">
+        UPDATE
+            t_user_info
+        SET
+        <if test="nick != null and nick != '' ">
+            nick = #{nick},
+        </if>
+        <if test="avatar != null">
+            avatar = #{avatar},
+        </if>
+        <if test="sign != null">
+            sign = #{sign},
+        </if>
+        <if test="birth != null and birth != '' ">
+            birth = #{birth},
+        </if>
+        <if test="gender != null and gender != '' ">
+            gender = #{gender},
+        </if>
+            updateTime = #{updateTime}
+        WHERE
+            userId = #{userId}
+    </update>
+
+<!--    List<UserInfo> getUserInfoByUserIds(Set<Long> userIdList);-->
+    <select id="getUserInfoByUserIds" resultType="com.tiangong.domain.UserInfo">
+        SELECT
+            *
+        FROM
+            t_user_info
+        WHERE
+            1 = 1
+            <if test="userIdList != null and userIdList.size > 0">
+                AND
+                    userId
+                IN 
+                    <foreach collection="userIdList" item="userId" index="index" open="(" close=")" separator=",">
+                        #{userId}
+                    </foreach>
+            </if>
+    </select>
+
+<!--    Integer pageCountUserInfo(Map<String, Object> params);-->
+    <select id="pageCountUserInfo" parameterType="java.util.Map" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            t_user_info
+        WHERE
+            1 = 1
+            <if test="nick != null and nick != '' ">
+                AND
+                    nick
+                LIKE
+                    '%${nick}%'
+            </if>
+    </select>
+
+<!--    List<UserInfo> pageListUserInfos(Map<String, Object> params);-->
+    <select id="pageListUserInfos" parameterType="java.util.Map" resultType="com.tiangong.domain.UserInfo">
+        SELECT
+            *
+        FROM
+            t_user_info
+        WHERE
+            1 = 1
+            <if test="nick != null and nick != '' ">
+                AND
+                    nick
+                LIKE
+                    '%${nick}%'
+            </if>
+        ORDER BY
+            id
+        DESC
+        LIMIT
+            #{start}, #{limit}
+    </select>
+
+<!--    void deleteRefreshToken(String refreshToken, Long userId);-->
+    <delete id="deleteRefreshToken">
+        DELETE FROM
+            t_refresh_token
+        WHERE
+            refreshToken = #{refreshToken}
+    </delete>
+
+<!--    Integer addRefreshToken(@Param("refreshToken") String refreshToken,-->
+<!--    @Param("userId") Long userId,-->
+<!--    @Param("createTime") Date createTime);-->
+    <insert id="addRefreshToken">
+        INSERT INTO
+            t_refresh_token(
+                userId,
+                refreshToken,
+                createTime
+        ) VALUES(
+                 #{userId},
+                 #{refreshToken},
+                 #{createTime}
+                )
+    </insert>
+
+<!--    RefreshTokenDetail getRefreshTokenDetail(String refreshToken);-->
+    <select id="getRefreshTokenDetail" parameterType="java.lang.String" resultType="com.tiangong.domain.RefreshTokenDetail">
+        SELECT
+            *
+        FROM
+            t_refresh_token
+        WHERE
+            refreshToken = #{refreshToken}
+    </select>
+
+<!--    List<UserInfo> batchGetUserInfoByUserIds(Set<Long> userIdList);-->
+    <select id="batchGetUserInfoByUserIds" parameterType="java.util.Set" resultType="com.tiangong.domain.UserInfo">
+        SELECT
+            *
+        FROM
+            t_user_info
+        WHERE
+            userId
+        IN
+            <foreach collection="userIdList" item="userId" open="(" close=")" separator=",">
+                #{userId}
+            </foreach>
+    </select>
+
+</mapper>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tiangong.dao.FollowingGroupDao">
+
+<!--    FollowingGroup getByType(String type);-->
+    <select id="getByType" parameterType="java.lang.String" resultType="com.tiangong.domain.FollowingGroup">
+        SELECT
+            *
+        FROM
+            t_following_group
+        WHERE
+            `type` = #{type}
+    </select>
+
+<!--    FollowingGroup getById(Long id);-->
+    <select id="getById" parameterType="java.lang.Long" resultType="com.tiangong.domain.FollowingGroup">
+        SELECT
+            *
+        FROM
+            t_following_group
+        WHERE
+            id = #{id}
+    </select>
+
+<!--    List<FollowingGroup> getByUserId(Long userId);-->
+    <select id="getByUserId" parameterType="java.lang.Long" resultType="com.tiangong.domain.FollowingGroup">
+        SELECT
+            *
+        FROM
+            t_following_group
+        WHERE
+            userId = #{userId}
+        OR
+            `type`
+        IN
+            ('0', '1', '2')
+    </select>
+
+<!--    Integer addUserFollowingGroups(FollowingGroup followingGroup);-->
+    <insert id="addUserFollowingGroups" parameterType="com.tiangong.domain.FollowingGroup" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO
+            t_following_group(
+                userId,
+                `name`,
+                `type`,
+                createTime
+            )VALUES (
+                #{userId},
+                #{name},
+                #{type},
+                #{createTime}
+            )
+    </insert>
+
+<!--    List<FollowingGroup> getUserFollowingGroups(Long userId);-->
+    <select id="getUserFollowingGroups" parameterType="java.lang.Long" resultType="com.tiangong.domain.FollowingGroup">
+        SELECT
+            *
+        FROM
+            t_following_group
+        WHERE
+            userId = #{userId}
+    </select>
+    
+</mapper>

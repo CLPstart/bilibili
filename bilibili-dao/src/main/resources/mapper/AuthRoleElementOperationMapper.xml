@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tiangong.dao.AuthRoleElementOperationDao">
+
+    <resultMap id="AuthElementOperationResultMap" type="com.tiangong.domain.auth.AuthRoleElementOperation">
+        <id column="id" property="id"/>
+        <id column="roleId" property="roleId"/>
+        <id column="elementOperationId" property="elementOperationId"/>
+        <association property="authElementOperation" javaType="com.tiangong.domain.auth.AuthElementOperation">
+            <id column="elementName" property="elementName"/>
+            <id column="elementCode" property="elementCode"/>
+            <id column="operationType" property="operationType"/>
+        </association>
+    </resultMap>
+    
+<!--    List<AuthRoleElementOperation> getRoleElementOperationsByRoleIds(Set<Long> roleIdSet);-->
+    <select id="getRoleElementOperationsByRoleIds" parameterType="java.util.Set" resultMap="AuthElementOperationResultMap">
+        SELECT
+            areo.*,
+            aeo.elementName,
+            aeo.elementCode,
+            aeo.operationType
+        FROM
+            t_auth_role_element_operation areo
+        LEFT JOIN
+            t_auth_element_operation aeo
+        ON
+            areo.elementOperationId = aeo.id
+        where
+            areo.roleId
+        IN
+            <foreach collection="roleIdSet" item="roleId" index="index" open="(" close=")" separator=",">
+                #{roleId}
+            </foreach>
+    </select>
+
+</mapper>
